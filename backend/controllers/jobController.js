@@ -30,3 +30,20 @@ const getAllJobs = async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 };
+
+const getJobById = async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT j.*, u.name as employer_name FROM jobs j JOIN users u ON j.employer_id = u.id WHERE j.id = $1',
+      [req.params.id]
+    );
+
+    if (!result.rows[0]) {
+      return res.status(404).json({ message: 'Job not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+};
